@@ -12,6 +12,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -44,7 +45,8 @@ public class Main extends Application {
         Label fromLabel = new Label("From");
         fromLabel.setLabelFor(fromText);
         Label toLabel = new Label("To");
-        Label resultLabel = new Label("Money converted");
+        Label resultLabel = new Label("Convert USD to your currency");
+        resultLabel.setFont(new Font("Futura", 18));
         GridPane.setFillWidth(resultLabel, true);
         resultLabel.setMaxWidth(Double.MAX_VALUE);
         resultLabel.setAlignment(Pos.CENTER);
@@ -55,14 +57,26 @@ public class Main extends Application {
             public void handle(ActionEvent event) {
                 Double result;
                 if (toBox.getValue().equals("JPY")) {
-                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(0));
-                    resultLabel.setText("It's ¥ " + String.valueOf(result));
+                    try {
+                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(0));
+                        resultLabel.setText("It's ¥ " + String.valueOf(result));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input");
+                    }
                 } else if (toBox.getValue().equals("CAD")) {
-                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(1));
-                    resultLabel.setText("It's $ " + String.valueOf(result));
+                    try {
+                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(1));
+                        resultLabel.setText("It's $ " + String.valueOf(result));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input");
+                    }
                 } else {
-                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(2));
-                    resultLabel.setText("It's $ " + String.valueOf(result));
+                    try {
+                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(2));
+                        resultLabel.setText("It's $ " + String.valueOf(result));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input");
+                    }
                 }
             }
         });
@@ -72,8 +86,8 @@ public class Main extends Application {
         root.add(fromBox, 2, 0);
         root.add(toLabel, 0, 1);
         root.add(toBox, 2, 1);
-        root.add(resultLabel, 0, 2, 3, 1);
-        root.add(convertButton, 0, 3, 3, 1);
+        root.add(convertButton, 0, 2, 3, 1);
+        root.add(resultLabel, 0, 3, 3, 1);
         root.setAlignment(Pos.CENTER);
 
         primaryStage.setTitle("Money Converter");
