@@ -3,6 +3,8 @@ package money_converter;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,8 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
-
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -27,31 +27,50 @@ public class Main extends Application {
         Button convertButton = new Button("Convert");
         convertButton.setId("convertBtn");
         convertButton.setMaxWidth(Double.MAX_VALUE);
-        //convertButton.setOnAction();
 
         // Create textField
         TextField fromText = new TextField();
-        TextField toText = new TextField();
 
         // Create ComboBoxes
-        ComboBox<String> fromBox = new ComboBox<>();
-        ComboBox<String> toBox = new ComboBox<>();
+        MoneyAPI api = new MoneyAPI();
+        api.connectToAPI();
+
+        ObservableList<String> usdOption = FXCollections.observableArrayList("USD");
+        ObservableList<String> currencyNames = FXCollections.observableArrayList(api.getCountries());
+        ComboBox<String> fromBox = new ComboBox<>(usdOption);
+        ComboBox<String> toBox = new ComboBox<>(currencyNames);
 
         // Create labels
         Label fromLabel = new Label("From");
         fromLabel.setLabelFor(fromText);
         Label toLabel = new Label("To");
-        toLabel.setLabelFor(toText);
         Label resultLabel = new Label("Money converted");
         GridPane.setFillWidth(resultLabel, true);
         resultLabel.setMaxWidth(Double.MAX_VALUE);
         resultLabel.setAlignment(Pos.CENTER);
 
+        // Setting the convert button an action to calculate
+        convertButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Double result;
+                if (toBox.getValue().equals("JPY")) {
+                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(0));
+                    resultLabel.setText("It's ¥ " + String.valueOf(result));
+                } else if (toBox.getValue().equals("CAD")) {
+                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(1));
+                    resultLabel.setText("It's $ " + String.valueOf(result));
+                } else {
+                    result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(2));
+                    resultLabel.setText("It's $ " + String.valueOf(result));
+                }
+            }
+        });
+
         root.add(fromLabel, 0, 0);
         root.add(fromText, 1, 0);
         root.add(fromBox, 2, 0);
         root.add(toLabel, 0, 1);
-        root.add(toText, 1, 1);
         root.add(toBox, 2, 1);
         root.add(resultLabel, 0, 2, 3, 1);
         root.add(convertButton, 0, 3, 3, 1);
@@ -62,7 +81,11 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    public double convert(double input, double rate) {
+        return input * rate;
+    }
+
     public static void main(String[] args) {
-        launch(args);
+      launch(args);
     }
 }

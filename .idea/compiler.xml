@@ -20,7 +20,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MoneyConverter" target="1.5" />
+      <module name="MoneyConverter" target="9" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -5,86 +5,75 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MoneyAPI {
 
-  private int[] rates;
-  private String[] currencies;
+  private ArrayList<String> countries;
+  private ArrayList<Double> currencyRates;
+  private Map<String, Double> moneyObj;
 
-  String baseURLString = "https://openexchangerates.org/api/";
-  String latestURLString = "latest.json";
-  String currenciesURLString = "currencies.json";
-  String appIDString = "?app_id=7c21805a603041edaa9a4215751f75e0";
-//  URL latestURL;
-//  URL currenciesURL;
-
-  StringBuilder latestString = new StringBuilder();
-  StringBuilder currenciesString = new StringBuilder();
-
-  // Making api url string
-  String latestURL = baseURLString + latestURLString + appIDString;
-  String currenciesURL = baseURLString + currenciesURLString + appIDString;
-
-  // Making api request
-  {
-    try {
-      HttpResponse<JsonNode> jsonResponse = Unirest.get(latestURL).asJson();
-    } catch (UnirestException e) {
-        e.printStackTrace();
-    }
+  public MoneyAPI() {
+    moneyObj = new HashMap<String, Double>();
+    countries = new ArrayList<>();
+    currencyRates = new ArrayList<>();
   }
 
-//  // Making api url
-//  {
-//    try {
-//      latestURL = new URL(baseURLString + latestURLString + appIDString);
-//      currenciesURL = new URL(baseURLString + currenciesURLString + appIDString);
-//    } catch (MalformedURLException e) {
-//      e.printStackTrace();
-//    }
-//  }
-//
-//  // Making api request
-//  {
-//    try {
-//      HttpURLConnection latestRequest = (HttpURLConnection) latestURL.openConnection();
-//      HttpURLConnection currenciesRequest = (HttpURLConnection) currenciesURL.openConnection();
-//
-//      InputStream latestInput = latestRequest.getInputStream();
-//      InputStream currenciesInput = currenciesRequest.getInputStream();
-//
-//      BufferedReader latestReader = new BufferedReader(new InputStreamReader(latestInput));
-//      BufferedReader currenciesReader = new BufferedReader(new InputStreamReader(currenciesInput));
-//
-//      String latestLine;
-//      String currenciesLine;
-//
-//      while ((latestLine = latestReader.readLine()) != null) {
-//        latestString.append(latestLine);
-//      }
-//
-//      while ((currenciesLine = currenciesReader.readLine()) != null) {
-//        currenciesString.append(currenciesLine);
-//      }
-//
-//      latestReader.close();
-//      currenciesReader.close();
-//
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
-//  }
+  private void addCurrency(String country, Double rate) {
+    countries.add(country);
+    currencyRates.add(rate);
+    moneyObj.put(country, rate);
+  }
 
-  ObjectMapper mapper = new ObjectMapper();
+  // Getters
+  public ArrayList<String> getCountries() {
+    return countries;
+  }
 
+  public ArrayList<Double> getRates() {
+    return currencyRates;
+  }
+
+  public Map<String, Double> getMoneyObj() {
+    return moneyObj;
+  }
+
+
+
+  public void connectToAPI() {
+    String baseURLString = "https://openexchangerates.org/api/";
+    String latestURLString = "latest.json";
+    //String currenciesURLString = "currencies.json";
+    String appIDString = "?app_id=7c21805a603041edaa9a4215751f75e0";
+
+    // Making api url string
+    String latestURL = baseURLString + latestURLString + appIDString;
+
+    // Making api requests and make an object out of the response
+    try {
+      HttpResponse<JsonNode> jsonForLatest = Unirest.get(latestURL).asJson();
+
+      if (jsonForLatest.getStatus() == 200 || jsonForLatest.getStatus() == 201) {
+        JsonNode node = jsonForLatest.getBody();
+
+        JSONObject currencyObj = node.getObject().getJSONObject("rates");
+
+        Double jpy = currencyObj.getDouble("JPY");
+        Double cad = currencyObj.getDouble("CAD");
+        Double usd = currencyObj.getDouble("USD");
+
+        addCurrency("JPY", jpy);
+        addCurrency("CAD", cad);
+        addCurrency("USD", usd);
+      }
+    } catch (UnirestException e) {
+      e.printStackTrace();
+    }
+
+  }
 
 }
