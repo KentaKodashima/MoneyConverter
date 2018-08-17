@@ -7,10 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -56,27 +53,65 @@ public class Main extends Application {
             @Override
             public void handle(ActionEvent event) {
                 Double result;
-                if (toBox.getValue().equals("JPY")) {
-                    try {
-                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(0));
-                        resultLabel.setText("It's ¥ " + String.valueOf(result));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input");
-                    }
-                } else if (toBox.getValue().equals("CAD")) {
-                    try {
-                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(1));
-                        resultLabel.setText("It's $ " + String.valueOf(result));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input");
+                if (toBox.getValue() != null) {
+                    if (toBox.getValue().equals("JPY")) {
+                        try {
+                            result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(0));
+                            resultLabel.setText("It's ¥ " + String.valueOf(result));
+                        } catch (NumberFormatException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                            error.setHeaderText("Invalid input");
+                            error.setContentText("Please input only number or floating point");
+                            error.showAndWait();
+                        } catch (NullPointerException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                            error.setHeaderText("The select box is empty");
+                            error.setContentText("Please select a currency");
+                            error.showAndWait();
+                        }
+                    } else if (toBox.getValue().equals("CAD")) {
+                        try {
+                            result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(1));
+                            resultLabel.setText("It's $ " + String.valueOf(result));
+                        } catch (NumberFormatException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                          error.setHeaderText("Invalid input");
+                            error.setContentText("Please input only number or floating point");
+                            error.showAndWait();
+                        } catch (NullPointerException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                            error.setHeaderText("The select box is empty");
+                            error.setContentText("Please select a currency");
+                            error.showAndWait();
+                        }
+                    } else {
+                        try {
+                            result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(2));
+                            resultLabel.setText("It's $ " + String.valueOf(result));
+                        } catch (NumberFormatException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                            error.setHeaderText("Invalid input");
+                            error.setContentText("Please input only number or floating point");
+                            error.showAndWait();
+                        } catch (NullPointerException e) {
+                            Alert error = new Alert(Alert.AlertType.INFORMATION);
+                            error.setTitle("Something went wrong");
+                            error.setHeaderText("The select box is empty");
+                            error.setContentText("Please select a currency");
+                            error.showAndWait();
+                        }
                     }
                 } else {
-                    try {
-                        result = convert(Double.parseDouble(fromText.getText()), api.getRates().get(2));
-                        resultLabel.setText("It's $ " + String.valueOf(result));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid input");
-                    }
+                  Alert error = new Alert(Alert.AlertType.INFORMATION);
+                  error.setTitle("Something went wrong");
+                  error.setHeaderText("Invalid input");
+                  error.setContentText("Please input all required fields");
+                  error.showAndWait();
                 }
             }
         });
